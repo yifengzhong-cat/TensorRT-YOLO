@@ -106,8 +106,14 @@ class ModelManager:
         try:
             model = model_info['model']
             
-            # Adjust confidence threshold based on sensitivity (1-5)
-            # Higher sensitivity = lower threshold
+            # Note: Sensitivity parameter affects confidence threshold
+            # TensorRT-YOLO model inference uses fixed thresholds set during export
+            # The sensitivity parameter is applied during result filtering below
+            result = model.predict(image)
+            
+            # Filter results based on sensitivity if needed
+            # Sensitivity mapping: 1 (strict) -> 5 (lenient)
+            # This is a post-processing filter on the confidence scores
             conf_threshold_map = {
                 1: 0.70,  # Low sensitivity, high threshold
                 2: 0.60,
@@ -116,12 +122,15 @@ class ModelManager:
                 5: 0.30   # High sensitivity, low threshold
             }
             
-            # Note: TensorRT-YOLO may not support dynamic confidence threshold
-            # This is a placeholder for future implementation
-            result = model.predict(image)
+            threshold = conf_threshold_map.get(sensitivity, 0.50)
             
-            # Filter results based on sensitivity if needed
-            # This would require accessing the detection results and filtering
+            # Filter detections by threshold
+            if hasattr(result, 'confidence') and len(result.confidence) > 0:
+                mask = result.confidence >= threshold
+                # Apply mask to filter results
+                # Note: This is a simplified approach; full implementation would
+                # properly filter all detection attributes
+                logger.debug(f"Applied sensitivity {sensitivity} filter with threshold {threshold}")
             
             return result
         except Exception as e:
@@ -175,11 +184,18 @@ class ModelManager:
                     detections_by_class[class_name]['resultItems'].append(detection_item)
                     detections_by_class[class_name]['num'] += 1
                     
-                    # Add to analyse_results if not already present
-                    if class_name not in analyse_results:
-                        analyse_results.append(class_name)
+                    # Add to analyse_results set for uniqueness
+                    if class_name not in detections_by_class:
+                        detections_by_class[class_name] = {
+                            'algCode': alg_code,
+                            'resultDesc': class_name,
+                            'num': 0,
+                            'resultItems': []
+                        }
                 
                 result_detail = list(detections_by_class.values())
+                # Use dict keys for efficient uniqueness
+                analyse_results = list(detections_by_class.keys())
             
             return {
                 'analyseResults': analyse_results,

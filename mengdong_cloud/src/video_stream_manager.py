@@ -74,8 +74,12 @@ class VideoStreamProcessor:
                 logger.error(f"Failed to open video stream: {self.config.video_url}")
                 return
             
-            # Try to enable hardware acceleration
-            self.cap.set(cv2.CAP_PROP_HW_ACCELERATION, cv2.VIDEO_ACCELERATION_ANY)
+            # Try to enable hardware acceleration (may not be supported on all systems)
+            try:
+                self.cap.set(cv2.CAP_PROP_HW_ACCELERATION, cv2.VIDEO_ACCELERATION_ANY)
+                logger.debug(f"Hardware acceleration enabled for {self.config.analyse_id}")
+            except Exception as e:
+                logger.debug(f"Hardware acceleration not available: {e}")
             
             frame_count = 0
             self.last_result_time = time.time()
@@ -105,9 +109,9 @@ class VideoStreamProcessor:
                         
                     except Exception as e:
                         logger.error(f"Inference error for {self.config.analyse_id}: {e}")
-                
-                # Small sleep to prevent excessive CPU usage
-                time.sleep(0.001)
+                else:
+                    # Sleep longer if not time for inference yet
+                    time.sleep(0.1)
                 
         except Exception as e:
             logger.error(f"Error in video processing loop for {self.config.analyse_id}: {e}")

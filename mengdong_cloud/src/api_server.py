@@ -94,8 +94,13 @@ def result_upload_callback(analyse_id: str, result: dict, frame: np.ndarray):
             'resultDetail': result.get('resultDetail', [])
         }
         
-        # TODO: Send to platform's result endpoint
-        # For now, just log
+        # Send to platform's result endpoint
+        # TODO: Configure result_callback_url in config and implement actual HTTP POST
+        # For now, just log the result
+        if result_callback_url:
+            # Future implementation: POST to result_callback_url
+            pass
+        
         logger.info(f"Result for {analyse_id}: {len(result.get('analyseResults', []))} detections")
         
     except Exception as e:
@@ -350,9 +355,21 @@ def image_task():
         _, buffer = cv2.imencode('.jpg', image)
         raw_image_data = base64.b64encode(buffer).decode('utf-8')
         
-        # TODO: Draw bounding boxes on image for OSD
+        # Draw bounding boxes on image for OSD
         osd_image = image.copy()
-        # Draw detections...
+        if result and formatted_result.get('resultDetail'):
+            # Draw detection boxes
+            for detail in formatted_result['resultDetail']:
+                for item in detail.get('resultItems', []):
+                    x1, y1 = item['leftTopX'], item['leftTopY']
+                    x2, y2 = item['rightBottomX'], item['rightBottomY']
+                    # Draw rectangle
+                    cv2.rectangle(osd_image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                    # Draw label
+                    label = f"{detail['resultDesc']}: {item['score']:.1f}%"
+                    cv2.putText(osd_image, label, (x1, y1 - 10),
+                               cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        
         _, osd_buffer = cv2.imencode('.jpg', osd_image)
         osd_image_data = base64.b64encode(osd_buffer).decode('utf-8')
         
