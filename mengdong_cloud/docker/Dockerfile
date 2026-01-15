@@ -43,17 +43,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install Python dependencies
 RUN pip3 install --no-cache-dir --upgrade pip && \
     pip3 install --no-cache-dir \
-    torch==2.3.1 \
-    torchvision==0.18.1 \
+    torch>=2.6.0 \
+    torchvision>=0.21.0 \
     ultralytics==8.3.0 \
     opencv-python==4.10.0.84 \
-    numpy==1.24.3 \
-    pyyaml \
-    flask \
-    flask-cors \
-    requests \
-    pillow \
-    "pybind11[global]"
+    numpy>=1.24.3,<2.0.0 \
+    pyyaml>=6.0.0 \
+    flask>=3.0.0 \
+    flask-cors>=4.0.0 \
+    requests>=2.31.0 \
+    pillow>=10.0.0 \
+    "pybind11[global]">=2.11.0 \
+    supervision>=0.20.0
 
 # Set working directory
 WORKDIR /opt/TensorRT-YOLO

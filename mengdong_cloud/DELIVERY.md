@@ -176,13 +176,15 @@ curl -X POST http://localhost:22266/v1/service/abilities \
 
 ## 技术栈
 
-- **深度学习框架**: PyTorch, Ultralytics YOLO
+- **深度学习框架**: PyTorch 2.6.0+ (安全版本), Ultralytics YOLO
 - **推理引擎**: NVIDIA TensorRT
 - **加速计算**: CUDA
 - **视频处理**: OpenCV with FFmpeg
-- **Web框架**: Flask
+- **Web框架**: Flask 3.0+
 - **容器化**: Docker
 - **编程语言**: Python 3.12
+
+> **🔒 安全性**: 所有依赖项已升级到安全版本，修复了已知的CVE漏洞。详见 `SECURITY.md`。
 
 ## 性能指标
 
