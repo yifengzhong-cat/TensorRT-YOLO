@@ -1,0 +1,80 @@
+models:
+  - name: "model_mengdong_raa_adjusted"
+    algCode: "010101"
+    algDesc: "人员及安全装备检测"
+    pt_path: "/workspace/models/model_mengdong_raa_adjusted.pt"
+    engine_path: "/workspace/models/model_mengdong_raa_adjusted.engine"
+    task: "detect"
+    classes:
+      0: "person"
+      1: "safetybelt"
+      2: "mapblu"
+      3: "mapor"
+      4: "mapr"
+      5: "mapwh"
+      6: "mapy"
+    algParams:
+      - key: "--sensitivity"
+        value: "灵敏度,范围[1,5]"
+        default: 3
+  
+  - name: "model_mengdong_small_SRL"
+    algCode: "100102"
+    algDesc: "钩子和差速器检测"
+    pt_path: "/workspace/models/model_mengdong_small_SRL.pt"
+    engine_path: "/workspace/models/model_mengdong_small_SRL.engine"
+    task: "detect"
+    classes:
+      0: "hook"
+      1: "SRL"
+    algParams:
+      - key: "--sensitivity"
+        value: "灵敏度,范围[1,5]"
+        default: 3
+  
+  - name: "model_mengdong_tower"
+    algCode: "100103"
+    algDesc: "铁塔检测"
+    pt_path: "/workspace/models/model_mengdong_tower.pt"
+    engine_path: "/workspace/models/model_mengdong_tower.engine"
+    task: "detect"
+    classes:
+      0: "tower"
+    algParams:
+      - key: "--sensitivity"
+        value: "灵敏度,范围[1,5]"
+        default: 3
+  
+  - name: "model_mengdong_scene_album"
+    algCode: "100104"
+    algDesc: "场景检测"
+    pt_path: "/workspace/models/model_mengdong_scene_album.pt"
+    engine_path: "/workspace/models/model_mengdong_scene_album.engine"
+    task: "detect"
+    classes:
+      0: "AerialWorkBucketTruck"
+      1: "ConductorSpacer"
+      2: "byq"
+      3: "daozha"
+      4: "dlq"
+      5: "gk"
+      6: "jsj"
+      7: "pcs"
+      8: "pole"
+      9: "xl"
+    algParams:
+      - key: "--sensitivity"
+        value: "灵敏度,范围[1,5]"
+        default: 3
+
+server:
+  host: "0.0.0.0"
+  port: 22266
+  max_video_streams: 100
+  
+video:
+  output_formats:
+    - rtsp
+    - flv
+  rtsp_port: 8554
+  flv_port: 8080
